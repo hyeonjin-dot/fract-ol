@@ -6,31 +6,40 @@
 #    By: hyejung <hyejung@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/31 15:32:54 by hyejung           #+#    #+#              #
-#    Updated: 2021/09/07 14:28:15 by hyejung          ###   ########.fr        #
+#    Updated: 2021/10/07 15:09:39 by hyejung          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	fractol
 
 SRCS	=	main.c\
+			color.c\
+			tool.c\
+			draw.c
 
-OBJS	=	$(SRCS:.c=.o)
-RM		=	rm -f
-CFLAGS	=	-Wall -Wextra -Werror -Imlx
+RM		= rm -f
+CC		= gcc
+CFLAGS	= -Wall -Wextra -Werror
 
-.c.o	:
-	gcc $(CFLAGS) -I $(INCS) -c $< -o $(<:.c=.o)
+MLX     = ./mlx/
+MLX_LNK = -L $(MLX) -l mlx -framework OpenGL -framework AppKit
 
-$(NAME)	: $(MLX) $(OBJS)
+MLX_INC = -I $(MLX)
+MLX_LIB = $(addprefix $(MLX),mlx.a)
 
-$(MLX)	:
-	make -c mlx/
-all		:
+all: $(MLX_LIB) $(NAME)
 
-	gcc -Lmlx -lmlx -framework OpenGL -framework AppKit $(SRCS)
-	./a.out
+OBJS     = $(SRCS:.c=.o)
 
-clean	:	
+$(MLX_LIB):
+	@make -C $(MLX)
+
+$(NAME) :	$(OBJS)
+	$(CC) $(OBJS) $(MLX_LNK) -lm -o $(NAME)
+
+clean	:
+	$(RM) $(OBJS)
+	make -C $(MLX) clean	
 
 fclean	:	clean
 	$(RM) $(NAME)
